@@ -7,6 +7,11 @@ aos contatos do LED da sequinte forma: Contato do LED vermelho - 150 Ôhms, Cont
 
 ![trilhomontado](https://github.com/idmilton/ProjetoColorimetro/assets/4228326/2f3b81c3-9a5f-49bd-84c4-c4f7e4e20c2d)
 
+![20240522_103811](https://github.com/idmilton/ProjetoColorimetro/assets/4228326/b081db80-440b-432b-8dda-4dc649fbdc88)
+![20240522_110341](https://github.com/idmilton/ProjetoColorimetro/assets/4228326/f1e68967-db44-45ae-98b8-d545fc2acc4d)
+![20240522_105353](https://github.com/idmilton/ProjetoColorimetro/assets/4228326/1499ea80-f8d1-429e-b712-4f73a106f1ff)
+![20240522_105111](https://github.com/idmilton/ProjetoColorimetro/assets/4228326/e5d0f797-1ecf-4ed9-aa4e-962db04e78f2)
+
 
 A rotina em python integrará a leitura do sensor de intensidade do smartphone e o comando da placa arduino uno. Para tanto o phyphox precisará ser ligado manualmente no 
 smartphone, com permissão para acesso remoto. O endereço indicado no aplicativo precisará ser modificado na rotina do python.
