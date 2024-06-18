@@ -1,0 +1,226 @@
+import numpy as np
+import pandas as pd
+from matplotlib import pyplot as plt
+import scipy
+import pyfirmata2 
+import time
+import requests as r
+import json
+import csv
+from datetime import date
+from datetime import datetime
+from matplotlib import ticker
+import math
+from scipy.optimize import curve_fit
+from scipy import asarray as ar,exp
+from scipy import optimize
+import math
+from scipy.signal import find_peaks
+#from lmfit import Model
+from sklearn.metrics import r2_score
+
+#def salvar(dados):
+filename = datetime.now().strftime("%Y_%m_%d-%I_%M_%S_%p")
+filename = str(filename)
+
+#PORT = pyfirmata2.Arduino.AUTODETECT #Função detecta automaticamente a porta COM
+
+## Creates a new board
+#print("Setting up the connection to the board ...")
+board = pyfirmata2.Arduino('COM3') #Necessário verificar a porta COM utilizada em seu computador
+
+# Setup the digital pin for PWM
+pwm_3 = board.get_pin('d:3:p')
+pwm_6 = board.get_pin('d:6:p')
+pwm_10 = board.get_pin('d:10:p')
+
+---------------acessa dados do sensor no smartphone-----    
+url = 'http://192.168.1.4:8080/get?'   #
+what_to_get = ['illum'] #Menemônico específico do phyphox
+def phyphox():
+    response = r.get(url + '&'.join(what_to_get)).text
+    data = json.loads(response)
+    
+    for item in what_to_get:
+       mag_data = data['buffer'][item]['buffer'][0]
+       print(mag_data)
+       return mag_data
+#-------------------ajusta para catodo comum------
+def rgb(x):
+    
+    s = ((255-x) / 255)*0.9
+    return(s)
+#-------------Inicia o processo-----------    
+
+def espec2(amostra):
+    l = 400
+    
+    file = datetime.now().strftime("%d%m%y-%H%M%S")
+ #amostra = input('Nome da amostra:')
+    filename = 'dados\\' + amostra + '.csv' #+'-'+ str(file)+'.csv'
+    f =  open(filename, 'r+', newline='')
+    
+    while l < 701:
+           
+            r = 0.0
+            g = 0.0
+            b = 0.0
+            if l >= 400.0 and l < 410.0:
+                t = (l - 400.0) / (410.0 - 400.0)
+                r = +(0.33 * t) - (0.20 * t * t)
+                
+            elif l >= 410.0 and l < 475.0:
+                t = (l - 410.0) / (475.0 - 410.0)
+                r = 0.14 - (0.13 * t * t)
+
+            elif l >= 545.0 and l < 595.0:
+                t = (l - 545.0) / (595.0 - 545.0)
+                r = +(1.98 * t) - (t * t)
+
+            elif l >= 595.0 and l < 650.0:
+                t = (l - 595.0) / (650.0 - 595.0)
+                r = 0.98 + (0.06 * t) - (0.40 * t * t)
+
+            elif l >= 650.0 and l < 700.0: 
+                t = (l - 650.0) / (700.0 - 650.0)
+                r = 0.65 - (0.84 * t) + (0.20 * t * t)
+
+            if l >= 415.0 and l < 475.0:
+                t = (l - 415.0) / (475.0 - 415.0)
+                g = +(0.80 * t * t)
+
+            elif l >= 475.0 and l < 590.0:
+                t = (l - 475.0) / (590.0 - 475.0)
+                g = 0.8 + (0.76 * t) - (0.80 * t * t)
+
+            elif l >= 585.0 and l < 639.0:
+                t = (l - 585.0) / (639.0 - 585.0)
+                g = 0.84 - (0.84 * t)
+                    
+            if l >= 400.0 and l < 475.0:
+                t = (l - 400.0) / (475.0 - 400.0)
+                b = +(2.20 * t) - (1.50 * t * t)
+
+            elif l >= 475.0 and l < 560.0:
+                t = (l - 475.0) / (560.0 - 475.0)
+                b = 0.7 - (t) + (0.30 * t * t)
+
+            rr = r*0.8475
+            gg = g*0.8475
+            bb = b*0.8475
+            pwm_3.write(rr)
+            pwm_6.write(gg)
+            pwm_10.write(bb)
+            sig = phyphox()
+            
+            medida = l , sig
+        
+            
+            writer = csv.writer(f)
+            writer.writerow(medida)
+            l += 1
+            time.sleep(0.1)
+    
+    f.close()
+    return filename
+    print(filename)
+    
+    
+#--------------------------------------------------------    
+
+print('Iniciando o espectrometro, digite a etapa:')
+print('(base 1, vazio  2, substância  3, Espectro 4):')
+
+entrada = int(input())
+
+match entrada:
+    
+    case 1:
+        amostra = 'base'
+        espec2(amostra)
+    
+    case 2:
+        amostra = 'vazio'
+        espec2(amostra)
+    #return filename
+        
+    case 3:
+        amostra = 'substancia'
+        espec2(amostra)
+    #return filename
+        
+    case 4:
+        print('Digite a identificação da amostra:')
+        print('- Evite acentuação')
+        print('- Utilize maiúsculas conforme deseje que apareça na legenda')
+        sample = input()
+        
+        plt.rcParams["figure.figsize"] = [10.00, 8.00]
+        plt.rcParams["figure.autolayout"] = True
+       #---------------------Abrindo os arquivos na pasta de base
+        filename0 = 'dados\\' + 'base' + '.csv'
+        filename1 = 'dados\\' + 'vazio' + '.csv'
+        filename2 = 'dados\\' + 'substancia' + '.csv'
+        #---------------lançando os valores de cada arquivo em um dataframe
+        bas = pd.read_csv(filename0, header = None ,sep=',', dtype = {'a': np.float64, 'b': np.float64}, index_col=False)
+        vaz = pd.read_csv(filename1, header = None ,sep=',', dtype = {'a': np.float64, 'b': np.float64}, index_col=False) 
+        sub = pd.read_csv(filename2, header = None ,sep=',', dtype = {'a': np.float64, 'b': np.float64}, index_col=False)
+        #--------Operação de log (I0/I)
+        Intensity = np.log10(vaz[1].astype(float)/sub[1].astype(float))
+        w = vaz[0]
+        base = bas[1]
+        vazio = vaz[1]
+        amostra = sub[1]
+        #----------Apura o valor máximo da intensidade para ajustar escala no gráfico
+        maxi = np.argmax(Intensity) #não mudar
+        low = np.min(Intensity) - np.min(Intensity)*0.1
+        high = np.max(Intensity) + np.max(Intensity)*0.2
+
+
+                      
+        #Gráficos Único ou duplo usando direita e esquerda twinx
+        fig, ax1 = plt.subplots()
+        ax1.plot(w, Intensity, 'b.', label = sample)
+       # ax1.plot(w, func, 'r-', label = 'ajuste')
+        # Make the y-axis label, ticks and tick labels match the line color.
+        ax1.set_ylabel('Absorbância ( a.u.)', color='k')
+        ax1.set_xlabel('Comprimento de onda (nm)', color='k')
+
+        #plt.legend()
+        
+        
+        #Dados de apresentação dos exisos
+        ax1.set(xlim=(400, 700), ylim=(low, high))   # <--- must set limits to let tick locators work
+        maj_pos = ticker.MultipleLocator(25)   # major ticks for every 20 units
+        min_pos = ticker.MultipleLocator(5)  # minor ticks for every 5 units
+        maj_pos2 = ticker.MultipleLocator((high-low)/10)   # major ticks for every 20 units
+        min_pos2 = ticker.MultipleLocator((high-low)/20)
+
+        ax1.xaxis.set(major_locator=maj_pos, minor_locator=min_pos)
+        ax1.yaxis.set(major_locator=maj_pos2, minor_locator=min_pos2)
+
+        ax1.tick_params(axis='both', which='minor', length=0)   # remove minor tick lines
+
+        # different settings for major & minor gridlines
+        ax1.grid(which='major', alpha=1)
+        ax1.grid(which='minor', alpha=1, linestyle='--')
+
+        legend = ax1.legend(loc='upper left', shadow=True, fontsize='xx-large')
+        legend.get_frame().set_facecolor('#ffffff')
+
+        plt.show()
+        #----------------------Salva w,vazio, amostra e operacao em arquivo csv---        
+        file = datetime.now().strftime("%d%m%y-%H%M%S")
+        filename = 'dados\\' + sample + '-'+ str(file)+'.csv' #crie manualmente uma pasta "dados" no local desejado
+        
+        f = open(filename, "w")
+                   
+        f.write("{} {} {} {}\n".format('w', 'base','vazio', 'amostra'))#, 'ajuste'))
+        for i in range(len(w)):
+            f.write("{} {} {} {}\n".format(w[i], base[i], vazio[i], amostra[i]))#, func[i]))
+        f.close()
+        
+               
+                
+# Close the serial connection to the Arduino
+board.exit()
