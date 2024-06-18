@@ -1,4 +1,4 @@
-# Projeto Colorimetro
+# Projeto Colorímetro
 Projeto de construção e montagem de um colorímetro utilizando um led RGB, um smartphone, uma placa arduino e um código em python.
 As peças para o trilho foram desenhadas e os desenhos em formato stl estão disponíveis para a reprodução. A montagem do trilho precisa ser complementada com 
 hastes de aço de 1/4 de polegada e porcas compatíveis. O projeto utiliza um LED RGB alto brilho anodo comum tipo cápsula de 5 mm. Resistores precisam ser ligados
