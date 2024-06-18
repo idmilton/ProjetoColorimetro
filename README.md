@@ -5,7 +5,7 @@ As peças para o trilho foram desenhadas e os desenhos em formato stl estão dis
 hastes de aço de 1/4 de polegada e porcas compatíveis. O projeto utiliza um LED RGB alto brilho anodo comum tipo cápsula de 5 mm. Resistores precisam ser ligados
 aos contatos do LED da sequinte forma: Contato do LED vermelho - 150 Ôhms, Contato do LED verde- 120 Ôhms e Contato do LED azul - 150 Ôhms. Eventualmente utilizando resistores de resistência um pouco menor poderá funcionar com tensão ainda anterior ao limiar dos LEDs. No trabalho de referência, foi utilizada uma cubeta de vidro comum, adquirida por 35 reais de 10 mm x 10 mm x 50 mm. 
 
-Colorimeter Project
+# Colorimeter Project
 Project to build and assemble a colorimeter using an RGB LED, a smartphone, an Arduino board and Python code.
 The parts for the track have been designed and the drawings in stl format are available for reproduction. The rail assembly needs to be complemented with 
 1/4 inch steel rods and compatible nuts. The project uses a 5 mm capsule-type common anode high-brightness RGB LED. Resistors need to be connected
