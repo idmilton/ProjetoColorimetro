@@ -28,5 +28,5 @@ The Python routine will integrate the reading from the smartphone's intensity se
 ![esquema-experimental (2)](https://github.com/idmilton/ProjetoColorimetro/assets/4228326/f5f0de91-7234-472b-bb2b-0ae5d5039101)
 
 
-
+Referência: https://www.scielo.br/j/rbef/a/jqWKDMpTVzzQGYtcdVswTTc/?format=pdf&lang=pt
 
